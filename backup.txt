@@ -1,0 +1,164 @@
+{
+    "users": [
+        "Willian",
+        "Duda"
+    ],
+    "months": [
+        "2026-07",
+        "2026-08",
+        "2026-09"
+    ],
+    "expenses": [
+        {
+            "id": 1,
+            "name": "Aluguel",
+            "type": "recorrente",
+            "user": "Willian",
+            "values": {
+                "2026-07": 500,
+                "2026-08": 500,
+                "2026-09": 500,
+                "2026-10": 500
+            }
+        },
+        {
+            "id": 2,
+            "name": "Millennium",
+            "type": "recorrente",
+            "user": "Duda",
+            "values": {
+                "2026-07": 230,
+                "2026-08": 230,
+                "2026-09": 230,
+                "2026-10": 230
+            }
+        },
+        {
+            "id": 3,
+            "name": "Luz",
+            "type": "unico",
+            "user": "Duda",
+            "values": {
+                "2026-07": 35
+            }
+        },
+        {
+            "id": 4,
+            "name": "Agua",
+            "type": "unico",
+            "user": "Willian",
+            "values": {
+                "2026-07": 30
+            }
+        },
+        {
+            "id": 5,
+            "name": "Gas",
+            "type": "unico",
+            "user": "Duda",
+            "values": {
+                "2026-07": 22
+            }
+        },
+        {
+            "id": 6,
+            "name": "Internet",
+            "type": "recorrente",
+            "user": "Willian",
+            "values": {
+                "2026-07": 45,
+                "2026-08": 45,
+                "2026-09": 45,
+                "2026-10": 45
+            }
+        },
+        {
+            "id": 7,
+            "name": "Wizink Will",
+            "type": "unico",
+            "user": "Willian",
+            "values": {
+                "2026-07": 200
+            }
+        },
+        {
+            "id": 8,
+            "name": "Wizink Duda",
+            "type": "unico",
+            "user": "Duda",
+            "values": {
+                "2026-07": 200
+            }
+        },
+        {
+            "id": 9,
+            "name": "Manutenção Will",
+            "type": "recorrente",
+            "user": "Willian",
+            "values": {
+                "2026-07": 8.3,
+                "2026-08": 8.3,
+                "2026-09": 8.3
+            }
+        },
+        {
+            "id": 10,
+            "name": "Manutenção Duda",
+            "type": "recorrente",
+            "user": "Duda",
+            "values": {
+                "2026-07": 3.5,
+                "2026-08": 3.5,
+                "2026-09": 3.5
+            }
+        },
+        {
+            "id": 11,
+            "name": "Segurança Social",
+            "type": "recorrente",
+            "user": "Duda",
+            "values": {
+                "2026-07": 11,
+                "2026-08": 11,
+                "2026-09": 11
+            }
+        },
+        {
+            "id": 12,
+            "name": "Academia",
+            "type": "recorrente",
+            "user": "Willian",
+            "values": {
+                "2026-07": 33,
+                "2026-08": 33,
+                "2026-09": 33
+            }
+        }
+    ],
+    "incomes": [
+        {
+            "id": 1,
+            "name": "Salário Willian",
+            "user": "Willian",
+            "values": {
+                "2026-06": 1800,
+                "2026-07": 1100,
+                "2026-08": 1100,
+                "2026-09": 1100,
+                "2026-10": 1100
+            }
+        },
+        {
+            "id": 2,
+            "name": "Salário Duda",
+            "user": "Duda",
+            "values": {
+                "2026-06": 1500,
+                "2026-07": 990,
+                "2026-08": 990,
+                "2026-09": 990,
+                "2026-10": 990
+            }
+        }
+    ]
+}
