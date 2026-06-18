@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controle Financeiro</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Controle Financeiro</h1>
+        </header>
+
+        <section class="card">
+            <h2><span class="icon">👥</span> Responsáveis (Utilizadores)</h2>
+            <div class="user-management">
+                <div class="input-group">
+                    <input type="text" id="new-user-name" placeholder="Ex: Willian, Duda...">
+                    <button class="btn btn-primary" onclick="addUser()">Adicionar</button>
+                </div>
+                <div id="users-list" class="tags-list"></div>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2><span class="icon">📅</span> Meses da Tabela</h2>
+            <div class="month-management">
+                <div class="input-group">
+                    <input type="month" id="new-month-input" value="2026-06">
+                    <button class="btn btn-primary" onclick="addMonth()">Adicionar Mês</button>
+                </div>
+                <p class="help-text">Novos meses serão inseridos logo após a coluna de serviços (ordem decrescente de criação).</p>
+            </div>
+        </section>
+
+        <section class="card table-card">
+            <div class="table-header-actions">
+                <h2><span class="icon">📉</span> Contas a Pagar (Serviços)</h2>
+                <button class="btn btn-success btn-sm" onclick="openExpenseModal()">+ Novo Serviço</button>
+            </div>
+            <div class="table-responsive">
+                <table id="expenses-table">
+                    <thead></thead>
+                    <tbody></tbody>
+                    <tfoot></tfoot>
+                </table>
+            </div>
+        </section>
+
+        <section class="card table-card">
+            <div class="table-header-actions">
+                <h2><span class="icon">📈</span> Valores a Receber (Receitas)</h2>
+                <button class="btn btn-success btn-sm" onclick="openIncomeModal()">+ Nova Receita</button>
+            </div>
+            <div class="table-responsive">
+                <table id="incomes-table">
+                    <thead></thead>
+                    <tbody></tbody>
+                    <tfoot></tfoot>
+                </table>
+            </div>
+        </section>
+
+        <section class="card summary-card">
+            <h2><span class="icon">📊</span> Resumo Mensal Detalhado</h2>
+            <div class="month-selector-wrapper">
+                <label for="dashboard-month-select">Selecione o Mês para Análise:</label>
+                <select id="dashboard-month-select" onchange="updateDashboard()">
+                </select>
+            </div>
+
+            <div class="dashboard-grid">
+                <div class="dash-box income-box">
+                    <h3>Total a Receber</h3>
+                    <p id="dash-total-income">€0,00</p>
+                </div>
+                <div class="dash-box expense-box">
+                    <h3>Total a Pagar</h3>
+                    <p id="dash-total-expense">€0,00</p>
+                </div>
+                <div class="dash-box balance-box" id="dash-balance-box">
+                    <h3>Saldo Líquido</h3>
+                    <p id="dash-balance-value">€0,00</p>
+                </div>
+            </div>
+
+            <div class="breakdown-section">
+                <h3>Divisão por Responsável (Mês Selecionado)</h3>
+                <div class="table-responsive">
+                    <table id="breakdown-table">
+                        <thead>
+                            <tr>
+                                <th>Responsável</th>
+                                <th>A Receber</th>
+                                <th>A Pagar</th>
+                                <th>Saldo Individual</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+		<section class="card action-card">
+            <h2><span class="icon">💾</span> Cópia de Segurança (Backup)</h2>
+            <p>Exporta ou importa todos os dados do teu sistema utilizando um arquivo de texto (.txt).</p>
+            
+            <div style="display: flex; flex-direction: column; gap: 15px; margin-top: 15px;">
+                <button class="btn btn-secondary" onclick="exportToTxt()">Exportar Dados em .txt</button>
+                
+                <div style="border: 1px dashed var(--border-color); padding: 15px; border-radius: 8px; background: #f8fafc;">
+                    <label for="import-file" style="display: block; font-weight: 600; margin-bottom: 8px;">Importar de um arquivo .txt:</label>
+                    <input type="file" id="import-file" accept=".txt" onchange="importFromTxt(event)" style="width: 100%; font-size: 13px;">
+                </div>
+            </div>
+        </section>
+
+
+    <div id="expense-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeExpenseModal()">&times;</span>
+            <h3>Adicionar Novo Serviço (A Pagar)</h3>
+            <div class="form-group">
+                <label for="exp-name">Nome do Serviço:</label>
+                <input type="text" id="exp-name" placeholder="Ex: Aluguel, Luz...">
+            </div>
+            <div class="form-group">
+                <label for="exp-type">Tipo de Cobrança:</label>
+                <select id="exp-type">
+                    <option value="recorrente">Recorrente (Repete automaticamente nos novos meses)</option>
+                    <option value="unico">Valor Único (Lançamento pontual)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="exp-user">Responsável:</label>
+                <select id="exp-user" class="user-dropdown-select"></select>
+            </div>
+            <button class="btn btn-success btn-block" onclick="saveNewExpense()">Salvar Serviço</button>
+        </div>
+    </div>
+
+    <div id="income-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeIncomeModal()">&times;</span>
+            <h3>Adicionar Novo Ganho (A Receber)</h3>
+            <div class="form-group">
+                <label for="inc-name">Descrição do Ganho:</label>
+                <input type="text" id="inc-name" placeholder="Ex: Salário Willian, Subsídio...">
+            </div>
+            <div class="form-group">
+                <label for="inc-user">Responsável:</label>
+                <select id="inc-user" class="user-dropdown-select"></select>
+            </div>
+            <button class="btn btn-success btn-block" onclick="saveNewIncome()">Salvar Receita</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
