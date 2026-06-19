@@ -4,7 +4,8 @@
         "Duda"
     ],
     "months": [
-        "2026-07"
+        "2026-07",
+        "2026-08"
     ],
     "expenses": [
         {
@@ -12,112 +13,153 @@
             "name": "Aluguel",
             "type": "recorrente",
             "user": "Willian",
-            "values": {}
+            "values": {
+                "2026-07": 500,
+                "2026-08": 500
+            }
         },
         {
             "id": 2,
             "name": "Millennium",
             "type": "recorrente",
             "user": "Duda",
-            "values": {}
+            "values": {
+                "2026-07": 214,
+                "2026-08": 214
+            }
         },
         {
             "id": 4,
             "name": "Água",
             "type": "unico",
             "user": "Willian",
-            "values": {}
+            "values": {
+                "2026-07": 30
+            }
         },
         {
             "id": 5,
             "name": "Luz",
             "type": "unico",
             "user": "Duda",
-            "values": {}
+            "values": {
+                "2026-07": 50
+            }
         },
         {
             "id": 6,
             "name": "Gas",
             "type": "unico",
             "user": "Duda",
-            "values": {}
+            "values": {
+                "2026-07": 30
+            }
         },
         {
             "id": 7,
             "name": "Wizink Duda",
             "type": "unico",
             "user": "Duda",
-            "values": {}
+            "values": {
+                "2026-07": 100
+            }
         },
         {
             "id": 8,
             "name": "Wizink Will",
             "type": "unico",
             "user": "Willian",
-            "values": {}
+            "values": {
+                "2026-07": 200
+            }
         },
         {
             "id": 9,
             "name": "Novobanco Will",
             "type": "recorrente",
             "user": "Willian",
-            "values": {}
+            "values": {
+                "2026-07": 55,
+                "2026-08": 55
+            }
         },
         {
             "id": 10,
             "name": "Millennium (Cartão)",
             "type": "recorrente",
             "user": "Duda",
-            "values": {}
+            "values": {
+                "2026-07": 50,
+                "2026-08": 50
+            }
         },
         {
             "id": 11,
             "name": "Manutenção Will",
             "type": "recorrente",
             "user": "Willian",
-            "values": {}
+            "values": {
+                "2026-07": 8.3,
+                "2026-08": 8.3
+            }
         },
         {
             "id": 12,
             "name": "Manutenção Duda",
             "type": "recorrente",
             "user": "Duda",
-            "values": {}
+            "values": {
+                "2026-07": 3.5,
+                "2026-08": 3.5
+            }
         },
         {
             "id": 13,
             "name": "Internet",
             "type": "recorrente",
             "user": "Willian",
-            "values": {}
+            "values": {
+                "2026-07": 47,
+                "2026-08": 47
+            }
         },
         {
             "id": 14,
             "name": "Segurança social",
             "type": "recorrente",
             "user": "Duda",
-            "values": {}
+            "values": {
+                "2026-07": 11,
+                "2026-08": 11
+            }
         },
         {
             "id": 15,
             "name": "Contas BR",
             "type": "unico",
             "user": "Willian",
-            "values": {}
+            "values": {
+                "2026-07": 30
+            }
         },
         {
             "id": 16,
             "name": "Academia",
             "type": "recorrente",
             "user": "Willian",
-            "values": {}
+            "values": {
+                "2026-07": 33,
+                "2026-08": 33
+            }
         },
         {
             "id": 17,
             "name": "Klarna",
             "type": "unico",
             "user": "Willian",
-            "values": {}
+            "values": {
+                "2026-07": 16
+            }
         }
     ],
     "incomes": [
@@ -125,13 +167,17 @@
             "id": 1,
             "name": "Salário",
             "user": "Willian",
-            "values": {}
+            "values": {
+                "2026-07": 1035
+            }
         },
         {
             "id": 2,
             "name": "Salário",
             "user": "Duda",
-            "values": {}
+            "values": {
+                "2026-07": 960
+            }
         }
     ]
 }
