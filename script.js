@@ -1,7 +1,7 @@
 // ESTRUTURA CENTRAL DE DADOS DO SISTEMA (Persistido no LocalStorage)
 let appData = {
     users: ["Willian", "Duda"],
-    months: ["2026-06", "2026-07"], // Alterada a ordem inicial para os meses crescerem para a direita
+    months: ["2026-06", "2026-07"], // Os meses crescem para a direita nas configurações
     expenses: [
         { id: 1, name: "Aluguel", type: "recorrente", user: "Willian", values: { "2026-06": 650.00, "2026-07": 650.00 } },
         { id: 2, name: "Água", type: "unico", user: "Duda", values: { "2026-06": 35.40 } },
@@ -20,6 +20,13 @@ window.onload = function() {
         appData = JSON.parse(localStorage.getItem("finance_app_data"));
     }
     renderAll();
+    
+    // Se estivermos na página de configurações, carrega as credenciais salvas do GitHub
+    if (document.getElementById("gh-user")) {
+        if(localStorage.getItem("gh_user")) document.getElementById("gh-user").value = localStorage.getItem("gh_user");
+        if(localStorage.getItem("gh_repo")) document.getElementById("gh-repo").value = localStorage.getItem("gh_repo");
+        if(localStorage.getItem("gh_token")) document.getElementById("gh-token").value = localStorage.getItem("gh_token");
+    }
 };
 
 function saveToStorage() {
@@ -32,25 +39,29 @@ function formatEuro(value) {
 }
 
 function formatMonthLabel(monthString) {
+    if (!monthString || monthString === "Nenhum mês criado") return "";
     const [year, month] = monthString.split('-');
     const date = new Date(year, month - 1, 1);
     const monthName = date.toLocaleString('pt-PT', { month: 'long' });
     return `${monthName.charAt(0).toUpperCase() + monthName.slice(1)} ${year}`;
 }
 
+// FUNÇÃO CENTRAL DE RENDERIZAÇÃO
 function renderAll() {
-    renderUsers();
-    updateDropdowns();
-    renderMonthsSelector();
-    renderExpensesTable();
-    renderIncomesTable();
+    if (document.getElementById("users-list")) renderUsers();
+    if (document.querySelectorAll(".user-dropdown-select").length > 0) updateDropdowns();
+    if (document.getElementById("dashboard-month-select")) renderMonthsSelector();
+    
+    // O Dashboard e as Tabelas agora dependem diretamente do mês selecionado
     updateDashboard();
+    
     saveToStorage();
 }
 
-// GESTÃO DE UTILIZADORES
+// GESTÃO DE UTILIZADORES / RESPONSÁVEIS
 function renderUsers() {
     const listContainer = document.getElementById("users-list");
+    if (!listContainer) return;
     listContainer.innerHTML = "";
     appData.users.forEach(user => {
         const tag = document.createElement("div");
@@ -88,19 +99,16 @@ function updateDropdowns() {
     });
 }
 
-// GESTÃO DE MESES (ADICIONAR À DIREITA)
+// GESTÃO DE MESES
 function addMonth() {
     const input = document.getElementById("new-month-input");
     const month = input.value;
     if (!month) return;
     if (appData.months.includes(month)) return alert("Mês já existe!");
     
-    // Captura o último mês da tabela antes da inserção
     const lastActiveMonth = appData.months[appData.months.length - 1];
+    appData.months.push(month);
     
-    appData.months.push(month); // Adiciona ao final da lista (extrema direita)
-    
-    // Copia os valores recorrentes do mês anterior para o novo mês à direita
     if (lastActiveMonth) {
         appData.expenses.forEach(exp => {
             if (exp.type === 'recorrente' && exp.values[lastActiveMonth] !== undefined) {
@@ -108,11 +116,13 @@ function addMonth() {
             }
         });
     }
+    if (input) input.value = "";
     renderAll();
+    alert("Mês adicionado com sucesso!");
 }
 
 function deleteMonth(month) {
-    if (confirm(`Eliminar o mês ${formatMonthLabel(month)}?`)) {
+    if (confirm(`Eliminar o mês ${formatMonthLabel(month)}? Isto removerá os valores deste mês em todos os serviços.`)) {
         appData.months = appData.months.filter(m => m !== month);
         renderAll();
     }
@@ -120,6 +130,7 @@ function deleteMonth(month) {
 
 function renderMonthsSelector() {
     const select = document.getElementById("dashboard-month-select");
+    if (!select) return;
     const current = select.value;
     select.innerHTML = "";
     if (appData.months.length === 0) {
@@ -131,20 +142,38 @@ function renderMonthsSelector() {
         opt.value = m; opt.textContent = formatMonthLabel(m);
         select.appendChild(opt);
     });
-    if (appData.months.includes(current)) select.value = current;
+    // Tenta manter o mês selecionado anteriormente se ele ainda existir
+    if (appData.months.includes(current)) {
+        select.value = current;
+    } else {
+        select.value = appData.months[appData.months.length - 1]; // Por padrão pega o último criado (mais recente)
+    }
 }
 
-// TABELA CONTAS A PAGAR
-function renderExpensesTable() {
+// TABELA CONTAS A PAGAR (Filtrada pelo mês ativo)
+function renderExpensesTable(activeMonth) {
     const table = document.getElementById("expenses-table");
+    if (!table) return;
     const thead = table.querySelector("thead");
     const tbody = table.querySelector("tbody");
     const tfoot = table.querySelector("tfoot");
 
-    thead.innerHTML = `<tr><th>Serviços</th>${appData.months.map(m => `<th>${formatMonthLabel(m)} <button class="delete-row-btn" onclick="deleteMonth('${m}')">🗑️</button></th>`).join('')}</tr>`;
+    if (!activeMonth || activeMonth === "Nenhum mês criado") {
+        thead.innerHTML = "<tr><th>Serviços</th><th>Nenhum mês selecionado</th></tr>";
+        tbody.innerHTML = "<tr><td colspan='2' style='text-align:center;'>Crie um mês na página de configurações.</td></tr>";
+        tfoot.innerHTML = "";
+        return;
+    }
+
+    // O Cabeçalho agora mostra apenas um mês específico com a opção de o eliminar
+    thead.innerHTML = `<tr>
+        <th>Serviços</th>
+        <th>${formatMonthLabel(activeMonth)} <button class="delete-row-btn" onclick="deleteMonth('${activeMonth}')" title="Eliminar este mês inteiro">🗑️</button></th>
+    </tr>`;
 
     if (appData.expenses.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="${appData.months.length + 1}" style="text-align:center;">Nenhum serviço.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="2" style="text-align:center;">Nenhum serviço cadastrado.</td></tr>`;
+        tfoot.innerHTML = "";
         return;
     }
 
@@ -152,49 +181,46 @@ function renderExpensesTable() {
     appData.expenses.forEach(exp => {
         const tr = document.createElement("tr");
         let html = `<td><button class="delete-row-btn" onclick="deleteExpense(${exp.id})">❌</button> ${exp.name}<span class="meta-info">${exp.user} (${exp.type})</span></td>`;
-        appData.months.forEach(m => {
-            const val = exp.values[m] !== undefined ? exp.values[m].toFixed(2).replace('.', ',') : "0,00";
-            html += `<td><input type="text" class="currency-input" data-type="expense" data-id="${exp.id}" data-month="${m}" value="${val}" onfocus="handleInputFocus(this)" onblur="handleInputBlur(this)" onkeydown="handleInputKeyDown(this, event)"></td>`;
-        });
+        
+        // Renderiza apenas o input do mês selecionado
+        const val = exp.values[activeMonth] !== undefined ? exp.values[activeMonth].toFixed(2).replace('.', ',') : "0,00";
+        html += `<td><input type="text" class="currency-input" data-type="expense" data-id="${exp.id}" data-month="${activeMonth}" value="${val}" onfocus="handleInputFocus(this)" onblur="handleInputBlur(this)" onkeydown="handleInputKeyDown(this, event)"></td>`;
+        
         tr.innerHTML = html;
         tbody.appendChild(tr);
     });
 
-    let footHtml = `<tr><td>TOTAL A PAGAR</td>`;
-    appData.months.forEach(m => {
-        let total = appData.expenses.reduce((acc, curr) => acc + (curr.values[m] || 0), 0);
-        footHtml += `<td style="text-align:right; font-family:monospace;">${formatEuro(total)}</td>`;
-    });
-    tfoot.innerHTML = footHtml + "</tr>";
+    // Total da coluna ativa
+    let total = appData.expenses.reduce((acc, curr) => acc + (curr.values[activeMonth] || 0), 0);
+    tfoot.innerHTML = `<tr>
+        <td>TOTAL A PAGAR</td>
+        <td style="text-align:right; font-family:monospace; font-weight:bold;">${formatEuro(total)}</td>
+    </tr>`;
 }
 
-// MODAIS EXPENSES
-function openExpenseModal() { document.getElementById("expense-modal").style.display = "flex"; }
-function closeExpenseModal() { document.getElementById("expense-modal").style.display = "none"; }
-function saveNewExpense() {
-    const name = document.getElementById("exp-name").value.trim();
-    const type = document.getElementById("exp-type").value;
-    const user = document.getElementById("exp-user").value;
-    if (!name || !user) return alert("Preencha tudo!");
-    const newId = appData.expenses.length > 0 ? Math.max(...appData.expenses.map(e => e.id)) + 1 : 1;
-    appData.expenses.push({ id: newId, name, type, user, values: {} });
-    document.getElementById("exp-name").value = "";
-    closeExpenseModal();
-    renderAll();
-}
-function deleteExpense(id) {
-    if (confirm("Eliminar este serviço?")) { appData.expenses = appData.expenses.filter(e => e.id !== id); renderAll(); }
-}
-
-// TABELA VALORES A RECEBER
-function renderIncomesTable() {
+// TABELA VALORES A RECEBER (Filtrada pelo mês ativo)
+function renderIncomesTable(activeMonth) {
     const table = document.getElementById("incomes-table");
+    if (!table) return;
+    const thead = table.querySelector("thead");
     const tbody = table.querySelector("tbody");
     const tfoot = table.querySelector("tfoot");
-    table.querySelector("thead").innerHTML = `<tr><th>Ganhos / Receitas</th>${appData.months.map(m => `<th>${formatMonthLabel(m)}</th>`).join('')}</tr>`;
+
+    if (!activeMonth || activeMonth === "Nenhum mês criado") {
+        thead.innerHTML = "<tr><th>Ganhos / Receitas</th><th>Nenhum mês selecionado</th></tr>";
+        tbody.innerHTML = "<tr><td colspan='2' style='text-align:center;'>Crie um mês na página de configurações.</td></tr>";
+        tfoot.innerHTML = "";
+        return;
+    }
+
+    thead.innerHTML = `<tr>
+        <th>Ganhos / Receitas</th>
+        <th>${formatMonthLabel(activeMonth)}</th>
+    </tr>`;
 
     if (appData.incomes.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="${appData.months.length + 1}" style="text-align:center;">Nenhuma receita.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="2" style="text-align:center;">Nenhuma receita cadastrada.</td></tr>`;
+        tfoot.innerHTML = "";
         return;
     }
 
@@ -202,35 +228,57 @@ function renderIncomesTable() {
     appData.incomes.forEach(inc => {
         const tr = document.createElement("tr");
         let html = `<td><button class="delete-row-btn" onclick="deleteIncome(${inc.id})">❌</button> ${inc.name}<span class="meta-info">${inc.user}</span></td>`;
-        appData.months.forEach(m => {
-            const val = inc.values[m] !== undefined ? inc.values[m].toFixed(2).replace('.', ',') : "0,00";
-            html += `<td><input type="text" class="currency-input" data-type="income" data-id="${inc.id}" data-month="${m}" value="${val}" onfocus="handleInputFocus(this)" onblur="handleInputBlur(this)" onkeydown="handleInputKeyDown(this, event)"></td>`;
-        });
+        
+        // Renderiza apenas o input do mês selecionado
+        const val = inc.values[activeMonth] !== undefined ? inc.values[activeMonth].toFixed(2).replace('.', ',') : "0,00";
+        html += `<td><input type="text" class="currency-input" data-type="income" data-id="${inc.id}" data-month="${activeMonth}" value="${val}" onfocus="handleInputFocus(this)" onblur="handleInputBlur(this)" onkeydown="handleInputKeyDown(this, event)"></td>`;
+        
         tr.innerHTML = html;
         tbody.appendChild(tr);
     });
 
-    let footHtml = `<tr><td>TOTAL A RECEBER</td>`;
-    appData.months.forEach(m => {
-        let total = appData.incomes.reduce((acc, curr) => acc + (curr.values[m] || 0), 0);
-        footHtml += `<td style="text-align:right; font-family:monospace;">${formatEuro(total)}</td>`;
-    });
-    tfoot.innerHTML = footHtml + "</tr>";
+    // Total do mês ativo
+    let total = appData.incomes.reduce((acc, curr) => acc + (curr.values[activeMonth] || 0), 0);
+    tfoot.innerHTML = `<tr>
+        <td>TOTAL A RECEBER</td>
+        <td style="text-align:right; font-family:monospace; font-weight:bold;">${formatEuro(total)}</td>
+    </tr>`;
 }
 
-// MODAIS INCOME
-function openIncomeModal() { document.getElementById("income-modal").style.display = "flex"; }
-function closeIncomeModal() { document.getElementById("income-modal").style.display = "none"; }
-function saveNewIncome() {
+// CRIAÇÃO INLINE (PÁGINA CONFIG)
+function saveNewExpenseInline() {
+    const name = document.getElementById("exp-name").value.trim();
+    const type = document.getElementById("exp-type").value;
+    const user = document.getElementById("exp-user").value;
+    
+    if (!name || !user) return alert("Por favor, preencha o nome do serviço e selecione um responsável!");
+    
+    const newId = appData.expenses.length > 0 ? Math.max(...appData.expenses.map(e => e.id)) + 1 : 1;
+    appData.expenses.push({ id: newId, name, type, user, values: {} });
+    
+    document.getElementById("exp-name").value = "";
+    renderAll();
+    alert(`Serviço "${name}" adicionado com sucesso!`);
+}
+
+function deleteExpense(id) {
+    if (confirm("Eliminar este serviço?")) { appData.expenses = appData.expenses.filter(e => e.id !== id); renderAll(); }
+}
+
+function saveNewIncomeInline() {
     const name = document.getElementById("inc-name").value.trim();
     const user = document.getElementById("inc-user").value;
-    if (!name || !user) return alert("Preencha tudo!");
+    
+    if (!name || !user) return alert("Por favor, preencha a origem da receita e selecione um responsável!");
+    
     const newId = appData.incomes.length > 0 ? Math.max(...appData.incomes.map(i => i.id)) + 1 : 1;
     appData.incomes.push({ id: newId, name, user, values: {} });
+    
     document.getElementById("inc-name").value = "";
-    closeIncomeModal();
     renderAll();
+    alert(`Receita "${name}" adicionada com sucesso!`);
 }
+
 function deleteIncome(id) {
     if (confirm("Eliminar esta receita?")) { appData.incomes = appData.incomes.filter(i => i.id !== id); renderAll(); }
 }
@@ -267,18 +315,30 @@ function handleInputBlur(input) {
         if (item) item.values[m] = num;
     }
 
-    input.value = num.toFixed(2).replace('.', ',');
-    renderExpensesTable();
-    renderIncomesTable();
-    updateDashboard();
+    // Salva os dados sem re-renderizar tudo imediatamente para não perder o foco do input de forma abrupta
     saveToStorage();
+
+    // Atualiza apenas os blocos de totais e tabelas mantendo o contexto do mês ativo
+    const activeMonth = document.getElementById("dashboard-month-select") ? document.getElementById("dashboard-month-select").value : m;
+    renderExpensesTable(activeMonth);
+    renderIncomesTable(activeMonth);
+    updateDashboard();
 }
 
-// DASHBOARD E RESUMO MENSAL
+// DASHBOARD, RESUMO MENSAL E ACIONADOR DE FILTROS DAS TABELAS
 function updateDashboard() {
-    const m = document.getElementById("dashboard-month-select").value;
+    const select = document.getElementById("dashboard-month-select");
+    
+    // Se o select não existe (ex: estamos na config.html), pegamos o último mês disponível apenas para fins de cálculo interno
+    const m = select ? select.value : appData.months[appData.months.length - 1];
+    
+    // Manda renderizar as duas tabelas principais com base no mês ativo detetado
+    if (document.getElementById("expenses-table")) renderExpensesTable(m);
+    if (document.getElementById("incomes-table")) renderIncomesTable(m);
+
     if (!m || m === "Nenhum mês criado") {
-        document.getElementById("dash-balance-box").className = "dash-box balance-box";
+        const box = document.getElementById("dash-balance-box");
+        if(box) box.className = "dash-box balance-box";
         return;
     }
 
@@ -286,108 +346,36 @@ function updateDashboard() {
     let tExp = appData.expenses.reduce((acc, c) => acc + (c.values[m] || 0), 0);
     let bal = tInc - tExp;
 
-    document.getElementById("dash-total-income").textContent = formatEuro(tInc);
-    document.getElementById("dash-total-expense").textContent = formatEuro(tExp);
-    document.getElementById("dash-balance-value").textContent = formatEuro(bal);
-    document.getElementById("dash-balance-box").className = "dash-box balance-box " + (bal >= 0 ? "balance-positive" : "balance-negative");
+    if(document.getElementById("dash-total-income")) document.getElementById("dash-total-income").textContent = formatEuro(tInc);
+    if(document.getElementById("dash-total-expense")) document.getElementById("dash-total-expense").textContent = formatEuro(tExp);
+    if(document.getElementById("dash-balance-value")) document.getElementById("dash-balance-value").textContent = formatEuro(bal);
+    
+    const balanceBox = document.getElementById("dash-balance-box");
+    if (balanceBox) {
+        balanceBox.className = "dash-box balance-box " + (bal >= 0 ? "balance-positive" : "balance-negative");
+    }
 
     // Divisão por Pessoa
-    const tbody = document.getElementById("breakdown-table").querySelector("tbody");
-    tbody.innerHTML = "";
-    appData.users.forEach(u => {
-        let pInc = appData.incomes.filter(i => i.user === u).reduce((acc, c) => acc + (c.values[m] || 0), 0);
-        let pExp = appData.expenses.filter(e => e.user === u).reduce((acc, c) => acc + (c.values[m] || 0), 0);
-        let pBal = pInc - pExp;
+    const tableBreakdown = document.getElementById("breakdown-table");
+    if (tableBreakdown) {
+        const tbody = tableBreakdown.querySelector("tbody");
+        tbody.innerHTML = "";
+        appData.users.forEach(u => {
+            let pInc = appData.incomes.filter(i => i.user === u).reduce((acc, c) => acc + (c.values[m] || 0), 0);
+            let pExp = appData.expenses.filter(e => e.user === u).reduce((acc, c) => acc + (c.values[m] || 0), 0);
+            let pBal = pInc - pExp;
 
-        tbody.innerHTML += `<tr>
-            <td><strong>${u}</strong></td>
-            <td style="color:var(--success); text-align:right; font-family:monospace;">${formatEuro(pInc)}</td>
-            <td style="color:var(--danger); text-align:right; font-family:monospace;">${formatEuro(pExp)}</td>
-            <td style="text-align:right; font-family:monospace; font-weight:bold; color:${pBal >= 0 ? 'var(--success)' : 'var(--danger)'}">${formatEuro(pBal)}</td>
-        </tr>`;
-    });
+            tbody.innerHTML += `<tr>
+                <td><strong>${u}</strong></td>
+                <td style="color:var(--success); text-align:right; font-family:monospace;">${formatEuro(pInc)}</td>
+                <td style="color:var(--danger); text-align:right; font-family:monospace;">${formatEuro(pExp)}</td>
+                <td style="text-align:right; font-family:monospace; font-weight:bold; color:${pBal >= 0 ? 'var(--success)' : 'var(--danger)'}">${formatEuro(pBal)}</td>
+            </tr>`;
+        });
+    }
 }
 
-/* EXPORTAÇÃO TXT
-function exportToTxt() {
-    let t = "==================================================\n   RELATÓRIO FINANCEIRO EXTRAÍDO DO SISTEMA\n==================================================\n\n";
-    t += "1. CONTAS A PAGAR (SERVIÇOS)\n";
-    appData.expenses.forEach(e => {
-        t += `Serviço: ${e.name} [${e.user} - ${e.type}]\n`;
-        appData.months.forEach(m => t += `   ${formatMonthLabel(m)}: ${formatEuro(e.values[m])}\n`);
-    });
-    t += "\n2. VALORES A RECEBER\n";
-    appData.incomes.forEach(i => {
-        t += `Receita: ${i.name} [${i.user}]\n`;
-        appData.months.forEach(m => t += `   ${formatMonthLabel(m)}: ${formatEuro(i.values[m])}\n`);
-    });
-    
-    const blob = new Blob([t], { type: "text/plain;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url; link.download = `relatorio-financeiro.txt`;
-    link.click();
-} */
-// EXPORTAÇÃO PARA RELATÓRIO TXT (Formato estruturado seguro para leitura)
-function exportToTxt() {
-    // Convertemos os dados atuais do sistema numa string de texto organizada
-    const dataStr = JSON.stringify(appData, null, 4);
-    
-    const blob = new Blob([dataStr], { type: "text/plain;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url; 
-    link.download = `backup-financeiro-${new Date().toISOString().slice(0,10)}.txt`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-}
-
-// IMPORTAÇÃO DE ARQUIVO TXT
-function importFromTxt(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    
-    // Esta função roda assim que o navegador terminar de ler o arquivo de texto
-    reader.onload = function(e) {
-        try {
-            const textContent = e.target.result;
-            // Tenta converter o texto de volta para o objeto do sistema
-            const parsedData = JSON.parse(textContent);
-            
-            // Validação simples para garantir que o arquivo tem a estrutura correta
-            if (parsedData.users && parsedData.months && parsedData.expenses && parsedData.incomes) {
-                if (confirm("Atenção: Importar este arquivo irá substituir TODOS os dados atuais na tela. Desejas continuar?")) {
-                    appData = parsedData;
-                    renderAll(); // Atualiza toda a tela com os novos dados
-                    alert("Dados importados com sucesso!");
-                    // Limpa o campo do arquivo para permitir importar o mesmo arquivo de novo se necessário
-                    document.getElementById("import-file").value = "";
-                }
-            } else {
-                alert("Erro: O arquivo .txt selecionado não possui uma estrutura de backup válida deste sistema.");
-            }
-        } catch (error) {
-            alert("Erro ao ler o arquivo. Certifica-te de que selecionaste um arquivo .txt de backup gerado por este sistema.");
-            console.error(error);
-        }
-    };
-
-    reader.readAsText(file);
-}
-
-// --- INTEGRAÇÃO COM A API DO GITHUB ---
-
-// Carrega as configurações guardadas do GitHub ao abrir a página (se existirem)
-window.addEventListener('DOMContentLoaded', () => {
-    if(localStorage.getItem("gh_user")) document.getElementById("gh-user").value = localStorage.getItem("gh_user");
-    if(localStorage.getItem("gh_repo")) document.getElementById("gh-repo").value = localStorage.getItem("gh_repo");
-    if(localStorage.getItem("gh_token")) document.getElementById("gh-token").value = localStorage.getItem("gh_token");
-});
-
+// --- INTEGRACAO COM GITHUB E REQUISICOES DE BACKUP ---
 function saveGitHubConfig() {
     localStorage.setItem("gh_user", document.getElementById("gh-user").value.trim());
     localStorage.setItem("gh_repo", document.getElementById("gh-repo").value.trim());
@@ -400,60 +388,44 @@ function getGitHubCredentials() {
         user: localStorage.getItem("gh_user"),
         repo: localStorage.getItem("gh_repo"),
         token: localStorage.getItem("gh_token"),
-        file: "backup.txt" // Nome do arquivo dentro do repositório
+        file: "backup.txt"
     };
 }
 
-// 1. ENVIAR / GRAVAR NO GITHUB
 async function saveToGitHub() {
     const { user, repo, token, file } = getGitHubCredentials();
     if (!user || !repo || !token) return alert("Por favor, configura o acesso ao GitHub primeiro.");
 
     const url = `https://api.github.com/repos/${user}/${repo}/contents/${file}`;
     const dataStr = JSON.stringify(appData, null, 4);
-    
-    // O GitHub exige converter o texto para Base64 antes de enviar
     const contentBase64 = btoa(unescape(encodeURIComponent(dataStr)));
 
     try {
-        // Passo A: Precisamos saber se o arquivo já existe para pegar o "sha" (identificador de versão)
         let sha = "";
-        const resGet = await fetch(url, {
-            headers: { "Authorization": `token ${token}` }
-        });
-        
+        const resGet = await fetch(url, { headers: { "Authorization": `token ${token}` } });
         if (resGet.ok) {
             const fileInfo = await resGet.json();
-            sha = fileInfo.sha; // Se o arquivo existe, pegamos o SHA dele para poder atualizar
+            sha = fileInfo.sha;
         }
 
-        // Passo B: Enviar a atualização
         const resPut = await fetch(url, {
             method: "PUT",
-            headers: {
-                "Authorization": `token ${token}`,
-                "Content-Type": "application/json"
-            },
+            headers: { "Authorization": `token ${token}`, "Content-Type": "application/json" },
             body: JSON.stringify({
                 message: "Atualização de dados via App Financeiro",
                 content: contentBase64,
-                sha: sha || undefined // Se for um arquivo novo, não envia SHA
+                sha: sha || undefined
             })
         });
 
-        if (resPut.ok) {
-            alert("Sucesso! Dados guardados no GitHub.");
-        } else {
-            const errData = await resPut.json();
-            alert("Erro ao gravar: " + errData.message);
-        }
+        if (resPut.ok) alert("Sucesso! Dados guardados no GitHub.");
+        else alert("Erro ao gravar: " + (await resPut.json()).message);
     } catch (error) {
         console.error(error);
         alert("Erro de rede ao tentar conectar ao GitHub.");
     }
 }
 
-// 2. PUXAR / CARREGAR DO GITHUB
 async function loadFromGitHub() {
     const { user, repo, token, file } = getGitHubCredentials();
     if (!user || !repo || !token) return alert("Por favor, configura o acesso ao GitHub primeiro.");
@@ -461,33 +433,54 @@ async function loadFromGitHub() {
     const url = `https://api.github.com/repos/${user}/${repo}/contents/${file}?timestamp=${new Date().getTime()}`;
 
     try {
-        const response = await fetch(url, {
-            headers: { "Authorization": `token ${token}` }
-        });
-
+        const response = await fetch(url, { headers: { "Authorization": `token ${token}` } });
         if (!response.ok) {
-            if (response.status === 404) alert("Arquivo backup.txt não foi encontrado no repositório.");
-            else alert("Erro ao carregar dados do GitHub.");
+            alert(response.status === 404 ? "Arquivo backup.txt não encontrado." : "Erro ao carregar do GitHub.");
             return;
         }
 
         const fileInfo = await response.json();
-        
-        // O GitHub responde em Base64, precisamos decodificar de volta para texto
         const decodedText = decodeURIComponent(escape(atob(fileInfo.content)));
         const parsedData = JSON.parse(decodedText);
 
         if (parsedData.users && parsedData.months) {
-            if (confirm("Desejas substituir TODOS os dados atuais da tela pelos guardados no GitHub?")) {
+            if (confirm("Desejas substituir TODOS os dados locais pelos salvos no GitHub?")) {
                 appData = parsedData;
                 renderAll();
                 alert("Dados sincronizados com sucesso a partir do GitHub!");
             }
-        } else {
-            alert("O arquivo no GitHub não contém um formato válido.");
-        }
+        } else alert("O arquivo no GitHub não contém um formato válido.");
     } catch (error) {
         console.error(error);
         alert("Erro ao ler dados da nuvem.");
     }
+}
+
+function exportToTxt() {
+    const dataStr = JSON.stringify(appData, null, 4);
+    const blob = new Blob([dataStr], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url; link.download = `backup-financeiro-${new Date().toISOString().slice(0,10)}.txt`;
+    link.click();
+}
+
+function importFromTxt(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const parsedData = JSON.parse(e.target.result);
+            if (parsedData.users && parsedData.months) {
+                if (confirm("Substituir todos os dados atuais na tela pelo arquivo?")) {
+                    appData = parsedData;
+                    renderAll();
+                    alert("Dados importados com sucesso!");
+                    document.getElementById("import-file").value = "";
+                }
+            } else alert("Arquivo inválido.");
+        } catch (error) { alert("Erro ao ler o arquivo txt."); }
+    };
+    reader.readAsText(file);
 }
