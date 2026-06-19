@@ -26,7 +26,7 @@ body {
     color: var(--text-color);
     line-height: 1.5;
     padding: 10px;
-    overflow-x: hidden; /* Garante que nada force uma barra de rolagem horizontal no body */
+    overflow-x: hidden; /* Bloqueia de vez o scroll para os lados */
 }
 
 .container {
@@ -93,7 +93,6 @@ input:focus, select:focus {
     outline: 2px solid var(--primary-color);
 }
 
-/* Tags de utilizadores na página config */
 .tags-container {
     display: flex;
     flex-wrap: wrap;
@@ -121,7 +120,7 @@ input:focus, select:focus {
    ========================================================================== */
 .dashboard {
     display: grid;
-    grid-template-columns: repeat(2, 1fr); /* 2 colunas no telemóvel */
+    grid-template-columns: repeat(2, 1fr);
     gap: 12px;
     margin-bottom: 20px;
     width: 100%;
@@ -135,7 +134,6 @@ input:focus, select:focus {
     box-shadow: 0 1px 2px rgba(0,0,0,0.05);
 }
 
-/* Faz a caixa do Mês e do Saldo ocuparem a largura total no telemóvel */
 .dash-box:first-child, 
 .balance-box {
     grid-column: span 2;
@@ -160,23 +158,35 @@ input:focus, select:focus {
 .balance-negative { background-color: #fef2f2; border-color: #fecaca; color: #991b1b; }
 
 /* ==========================================================================
-   ESTILOS DE TABELA (ESTRUTURA PARA DESKTOP)
+   ESTILOS DE TABELA MANIFESTADOS IGUAIS À IMAGEM (ESTABILIZADOS)
    ========================================================================== */
 .table-container {
     width: 100%;
-    overflow-x: hidden; /* Remove scroll desnecessário */
+    overflow-x: hidden; /* Remove de vez qualquer estouro para os lados */
 }
 
 table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 5px;
+    table-layout: fixed; /* Força o navegador a respeitar as larguras exatas em % */
+}
+
+/* Define que a coluna de nomes ganha 55% de espaço e a de valores ganha 45% */
+th:first-child, td:first-child {
+    width: 55%;
+    word-wrap: break-word; /* Se o nome for muito longo, quebra a linha em vez de esticar */
+}
+
+th:last-child, td:last-child {
+    width: 45%;
+    text-align: right;
 }
 
 th, td {
-    padding: 12px;
-    text-align: left;
+    padding: 10px 4px; /* Otimiza o espaçamento para caber tudo em ecrãs pequenos */
     border-bottom: 1px solid var(--border-color);
+    vertical-align: middle;
 }
 
 th {
@@ -205,22 +215,24 @@ th {
     text-align: right;
     font-family: monospace;
     font-weight: bold;
-    max-width: 120px;
+    width: 100%; /* Ocupa o espaço estipulado sem vazar */
+    max-width: 110px; /* Impede que fique exageradamente grande */
     padding: 6px;
-    float: right;
+    display: inline-block;
 }
 
 /* ==========================================================================
-   MEDIA QUERIES - MÁGICA RECEPTIVA PARA TELEMÓVEL
+   MEDIA QUERIES - APENAS AJUSTES FINOS DE ADAPTAÇÃO PARA CABEÇALHOS
    ========================================================================== */
 @media (max-width: 600px) {
-    /* CORREÇÃO DO INLINE-FLEX DO INDEX.HTML DO UTILIZADOR */
+    /* Força o topo a quebrar em duas linhas apenas se o telemóvel for minúsculo */
     body > .container > header {
         display: flex !important;
         flex-direction: column !important;
         align-items: stretch !important;
-        gap: 15px !important;
+        gap: 12px !important;
         text-align: center;
+        margin-bottom: 10px;
     }
     
     body > .container > header div {
@@ -230,90 +242,20 @@ th {
     body > .container > header .btn {
         width: 100% !important;
         justify-content: center !important;
-        display: flex !important;
     }
 
-    /* TRANSFORMAÇÃO DE TODAS AS TABELAS EM CARDS COESOS NO TELEMÓVEL */
-    table, thead, tbody, tfoot, tr, th, td {
-        display: block !important; 
-        width: 100% !important;
-    }
-
-    /* Esconde os cabeçalhos das tabelas no telemóvel */
-    thead tr {
-        position: absolute !important;
-        top: -9999px !important;
-        left: -9999px !important;
-    }
-
-    /* Estiliza cada linha de dados como um mini-card */
-    tbody tr {
-        background: #f8fafc;
-        border: 1px solid var(--border-color) !important;
-        border-radius: 8px;
-        padding: 12px;
-        margin-bottom: 12px;
-        overflow: hidden;
-    }
-
-    tbody td {
-        border: none !important;
-        padding: 6px 0 !important;
-        display: flex !important;
-        justify-content: space-between !important;
-        align-items: center !important;
-        text-align: left !important;
-    }
-
-    /* SISTEMA DE LABELS AUTOMÁTICAS PARA A TABELA DE RESUMO NO TELEMÓVEL */
-    #breakdown-table tbody td:nth-of-type(1)::before { content: "Responsável: "; font-weight: bold; color: var(--secondary-color); }
-    #breakdown-table tbody td:nth-of-type(2)::before { content: "Ganhos: "; font-weight: bold; color: var(--secondary-color); }
-    #breakdown-table tbody td:nth-of-type(3)::before { content: "Despesas: "; font-weight: bold; color: var(--secondary-color); }
-    #breakdown-table tbody td:nth-of-type(4)::before { content: "Saldo Final: "; font-weight: bold; color: var(--secondary-color); }
-    
-    #breakdown-table tbody td {
-        border-bottom: 1px dashed var(--border-color) !important;
-    }
-    #breakdown-table tbody td:last-child {
-        border-bottom: none !important;
-    }
-
-    /* Linha do Input nas tabelas de Serviços e Receitas */
-    #expenses-table tbody td:last-child, 
-    #incomes-table tbody td:last-child {
-        border-top: 1px dashed var(--border-color) !important;
-        margin-top: 6px;
-        padding-top: 10px !important;
-        display: block !important;
-    }
-
-    /* Ajuste fino dos inputs monetários no telemóvel */
+    /* Garante que o input não faça zoom automático no iOS e telemóveis */
     .currency-input {
-        max-width: 100% !important;
-        width: 100% !important;
-        text-align: center !important;
-        float: none !important;
-        font-size: 16px !important; /* Impede o zoom automático no iOS */
-        margin-top: 5px;
-    }
-
-    /* Ajusta os rodapés (Totais das tabelas) */
-    tfoot tr {
-        background: #e2e8f0;
-        border-radius: 8px;
-        padding: 12px;
-        margin-top: 10px;
+        font-size: 16px !important; 
+        max-width: 95px !important; /* Tamanho cirúrgico para caber no telemóvel com folga */
     }
     
-    tfoot td {
-        border: none !important;
-        padding: 4px 0 !important;
-        display: flex !important;
-        justify-content: space-between !important;
+    th, td {
+        font-size: 13px; /* Encolhe ligeiramente as letras no telemóvel para evitar quebras feias */
     }
 }
 
-/* Expansão do Dashboard para ecrãs maiores (Computador) */
+/* Computador */
 @media (min-width: 601px) {
     .dashboard {
         grid-template-columns: repeat(4, 1fr);
@@ -321,5 +263,14 @@ th {
     .dash-box:first-child, 
     .balance-box {
         grid-column: auto;
+    }
+    th:first-child, td:first-child {
+        width: 70%; /* No computador o nome ganha mais destaque */
+    }
+    th:last-child, td:last-child {
+        width: 30%;
+    }
+    .currency-input {
+        max-width: 120px;
     }
 }
