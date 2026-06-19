@@ -1,190 +1,296 @@
+/* ==========================================================================
+   AGRUPAMENTO DE VARIÁVEIS E ESTILOS GERAIS
+   ========================================================================== */
+:root {
+    --primary-color: #2563eb;
+    --primary-hover: #1d4ed8;
+    --secondary-color: #64748b;
+    --secondary-hover: #475569;
+    --success: #10b981;
+    --danger: #ef4444;
+    --background: #f8fafc;
+    --card-bg: #ffffff;
+    --text-color: #1e293b;
+    --border-color: #e2e8f0;
+}
+
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-}
-
-:root {
-    --bg-color: #f4f6f9;
-    --card-bg: #ffffff;
-    --text-main: #2d3748;
-    --text-muted: #718096;
-    --primary: #4a5568;
-    --success: #2f855a;
-    --success-light: #e6fffa;
-    --danger: #c53030;
-    --danger-light: #fff5f5;
-    --border-color: #e2e8f0;
-    --accent: #3182ce;
 }
 
 body {
-    background-color: var(--bg-color);
-    color: var(--text-main);
-    padding: 15px;
-    font-size: 14px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: var(--background);
+    color: var(--text-color);
+    line-height: 1.5;
+    padding: 10px;
 }
 
 .container {
-    max-width: 1200px;
+    max-width: 1000px;
     margin: 0 auto;
+    padding: 5px;
 }
 
-header {
-    margin-bottom: 20px;
-    text-align: center;
-}
-
-header h1 {
-    font-size: 24px;
-    color: var(--primary);
-}
-
+/* ==========================================================================
+   COMPONENTES CORE (BOTÕES, CARDS, INPUTS)
+   ========================================================================== */
 .card {
     background: var(--card-bg);
     border-radius: 12px;
-    padding: 20px;
+    padding: 16px;
     margin-bottom: 20px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--border-color);
 }
 
 .card h2 {
-    font-size: 16px;
-    margin-bottom: 15px;
+    font-size: 1.1rem;
+    margin-bottom: 12px;
     display: flex;
     align-items: center;
-    color: var(--primary);
+    gap: 8px;
 }
 
-.card h2 .icon { margin-right: 8px; }
-
-.input-group {
-    display: flex;
-    gap: 10px;
+.btn {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.2s;
+    text-align: center;
 }
 
-input[type="text"], input[type="month"], select {
-    flex: 1;
+.btn:hover { background-color: var(--primary-hover); }
+
+.btn-secondary {
+    background-color: #f1f5f9;
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+}
+.btn-secondary:hover { background-color: #e2e8f0; }
+
+input, select {
+    width: 100%;
     padding: 10px;
     border: 1px solid var(--border-color);
     border-radius: 8px;
     font-size: 14px;
     background-color: #fff;
+    color: var(--text-color);
 }
 
-.btn {
-    padding: 10px 16px;
-    border: none;
-    border-radius: 8px;
-    font-weight: 600;
-    cursor: pointer;
-    font-size: 14px;
+input:focus, select:focus {
+    outline: 2px solid var(--primary-color);
 }
 
-.btn-sm { padding: 6px 12px; font-size: 12px; }
-.btn-primary { background-color: var(--accent); color: white; }
-.btn-success { background-color: var(--success); color: white; }
-.btn-secondary { background-color: var(--primary); color: white; }
-.btn-block { width: 100%; display: block; }
-
-.help-text { font-size: 12px; color: var(--text-muted); margin-top: 6px; }
-
-.tags-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+/* Tags de utilizadores na página config */
+.tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+}
 .tag {
-    background: #edf2f7;
+    background: #e2e8f0;
     padding: 6px 12px;
     border-radius: 20px;
-    display: flex;
+    font-size: 13px;
+    font-weight: 500;
+    display: inline-flex;
     align-items: center;
     gap: 6px;
 }
-.tag .remove-btn { cursor: pointer; color: var(--danger); font-weight: bold; }
-
-.table-header-actions {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 12px;
+.tag .remove-btn {
+    cursor: pointer;
+    color: var(--danger);
+    font-weight: bold;
 }
 
-.table-responsive {
-    width: 100%;
-    overflow-x: auto;
+/* ==========================================================================
+   DASHBOARD RESTRUTURADO (RESPONSIVO POR PADRÃO)
+   ========================================================================== */
+.dashboard {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* 2 colunas no telemóvel */
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.dash-box {
+    background: var(--card-bg);
+    padding: 12px;
+    border-radius: 12px;
     border: 1px solid var(--border-color);
-    border-radius: 8px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+/* Faz a caixa do Mês e do Saldo ocuparem a largura total no telemóvel */
+.dash-box:first-child, 
+.balance-box {
+    grid-column: span 2;
+}
+
+.dash-box h3 {
+    font-size: 12px;
+    color: var(--secondary-color);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+    letter-spacing: 0.5px;
+}
+
+.dash-box .value {
+    font-size: 1.3rem;
+    font-weight: 700;
+    font-family: monospace;
+}
+
+.balance-positive { background-color: #f0fdf4; border-color: #bbf7d0; color: #166534; }
+.balance-negative { background-color: #fef2f2; border-color: #fecaca; color: #991b1b; }
+
+/* ==========================================================================
+   ESTILOS DE TABELA (ESTRUTURA PARA DESKTOP)
+   ========================================================================== */
+.table-container {
+    width: 100%;
+    overflow-x: visible; /* Não precisa de barra de rolagem horizontal */
 }
 
 table {
     width: 100%;
     border-collapse: collapse;
-    min-width: 600px;
+    margin-top: 5px;
 }
 
 th, td {
-    padding: 10px 12px;
+    padding: 12px;
+    text-align: left;
     border-bottom: 1px solid var(--border-color);
 }
 
-th { background-color: #f7fafc; color: var(--primary); font-weight: 600; }
-
-td:first-child, th:first-child {
+th {
+    background-color: #f8fafc;
     font-weight: 600;
-    position: sticky;
-    left: 0;
-    background: #fff;
-    z-index: 2;
-    box-shadow: 2px 0 5px rgba(0,0,0,0.03);
+    font-size: 13px;
+    color: var(--secondary-color);
+}
+
+.meta-info {
+    display: block;
+    font-size: 11px;
+    color: var(--secondary-color);
+    margin-top: 2px;
+}
+
+.delete-row-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 12px;
+    margin-right: 4px;
 }
 
 .currency-input {
-    width: 90px;
-    padding: 6px;
-    border: 1px solid transparent;
-    border-radius: 4px;
     text-align: right;
-    background: #f8fafc;
     font-family: monospace;
+    font-weight: bold;
+    max-width: 120px;
+    padding: 6px;
+    float: right; /* Alinha o input à direita na célula */
 }
 
-.currency-input:focus {
-    border-color: var(--accent);
-    background: #fff;
-    outline: none;
-}
-
-tfoot tr { background-color: #edf2f7; font-weight: bold; }
-
-.meta-info { display: block; font-size: 11px; color: var(--text-muted); font-weight: normal; }
-.delete-row-btn { background: none; border: none; color: var(--danger); cursor: pointer; margin-left: 4px;}
-
-.dashboard-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 15px;
-    margin-top: 15px;
-}
-
-.dash-box { padding: 15px; border-radius: 10px; text-align: center; border: 1px solid var(--border-color); }
-.dash-box h3 { font-size: 12px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 5px;}
-.dash-box p { font-size: 20px; font-weight: bold; font-family: monospace; }
-
-.income-box { background: var(--success-light); color: var(--success); }
-.expense-box { background: var(--danger-light); color: var(--danger); }
-.balance-positive { background: var(--success-light); color: var(--success); border-color: #b2f5ea; }
-.balance-negative { background: var(--danger-light); color: var(--danger); border-color: #feb2b2; }
-
-.modal {
-    display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.4); align-items: center; justify-content: center; padding: 15px;
-}
-.modal-content { background: #fff; padding: 20px; border-radius: 12px; width: 100%; max-width: 400px; position: relative; }
-.close-modal { position: absolute; right: 15px; top: 12px; font-size: 24px; cursor: pointer; }
-.form-group { margin-bottom: 15px; }
-.form-group label { display: block; margin-bottom: 5px; font-weight: 600; }
-
+/* ==========================================================================
+   MEDIA QUERIES - MÁGICA RECEPTIVA PARA TELEMÓVEL
+   ========================================================================== */
 @media (max-width: 600px) {
-    .dashboard-grid { grid-template-columns: 1fr; }
-    .input-group { flex-direction: column; }
-    .btn { width: 100%; text-align: center; }
+    /* Ajustes de cabeçalho do topo */
+    header {
+        flex-direction: column;
+        align-items: stretch !important;
+        gap: 12px;
+        text-align: center;
+    }
+    
+    header .btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    /* TRANSFORMAÇÃO DA TABELA EM CARDS COESOS NO TELEMÓVEL */
+    table, thead, tbody, tfoot, tr, th, td {
+        display: block; 
+    }
+
+    /* Esconde o cabeçalho original da tabela que não serve no telemóvel */
+    thead tr {
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
+    }
+
+    /* Estiliza cada linha (serviço/receita) como um mini-card */
+    tbody tr {
+        background: #f8fafc;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 10px;
+        margin-bottom: 10px;
+        overflow: hidden;
+    }
+
+    /* Ajusta as células internas do mini-card */
+    tbody td {
+        border: none;
+        padding: 6px 0;
+        width: 100%;
+        display: inline-block;
+    }
+
+    /* Faz o input monetário ocupar uma posição de destaque no mini-card */
+    tbody td:last-child {
+        border-top: 1px dashed var(--border-color);
+        margin-top: 6px;
+        padding-top: 10px;
+    }
+
+    .currency-input {
+        max-width: 100%; /* Input expande para a largura do card no telemóvel */
+        width: 100%;
+        text-align: center; /* Facilita a digitação centralizada no telemóvel */
+        float: none;
+        font-size: 16px; /* Evita o zoom automático irritante do Safari/iOS */
+    }
+
+    /* Ajusta o rodapé (Totalizador) */
+    tfoot tr {
+        background: #e2e8f0;
+        border-radius: 8px;
+        padding: 12px;
+        text-align: center;
+        font-weight: bold;
+    }
+    
+    tfoot td {
+        border: none;
+        padding: 4px 0;
+        display: block;
+        text-align: center !important;
+    }
+}
+
+/* Expansão do Dashboard para ecrãs maiores (Computador) */
+@media (min-width: 601px) {
+    .dashboard {
+        grid-template-columns: repeat(4, 1fr); /* 4 colunas perfeitamente alinhadas */
+    }
+    .dash-box:first-child, 
+    .balance-box {
+        grid-column: auto; /* Desfaz o efeito de ecrã inteiro do telemóvel */
+    }
 }
