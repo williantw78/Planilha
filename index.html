@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestão Financeira</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="container">
+        <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 2px solid var(--border-color);">
+            <div>
+                <h1 style="margin: 0;">📊 Painel de Controle</h1>
+                <p style="margin: 5px 0 0 0; color: #64748b;">Visualização e Resumo Mensal .: Versão 2.0 :.</p>
+            </div>
+            <a href="config.html" class="btn" style="background-color: var(--primary-color); text-decoration: none; display: inline-flex; align-items: center; gap: 8px;">
+                ⚙️ Gerir Dados / Configurações
+            </a>
+        </header>
+
+            <div class="dash-box">
+                <h3>Mês de Análise</h3>
+                <select id="dashboard-month-select" onchange="updateDashboard()" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid var(--border-color); font-weight: bold;"></select>
+            </div>
+
+ 
+        <section class="card">
+            <div class="card-header">
+                <h2><span class="icon">💸</span> Contas a Pagar (Serviços)</h2>
+            </div>
+            <div class="table-container">
+                <table id="expenses-table">
+                    <thead></thead>
+                    <tbody></tbody>
+                    <tfoot></tfoot>
+                </table>
+            </div>
+        </section>
+
+        <section class="card">
+            <div class="card-header">
+                <h2><span class="icon">💰</span> Valores a Receber (Receitas)</h2>
+            </div>
+            <div class="table-container">
+                <table id="incomes-table">
+                    <thead></thead>
+                    <tbody></tbody>
+                    <tfoot></tfoot>
+                </table>
+            </div>
+        </section>
+    </div>
+
+       <section class="dashboard">
+
+            <div class="dash-box">
+                <h3>Total a Receber</h3>
+                <div class="value total-income" id="dash-total-income">€0,00</div>
+            </div>
+            <div class="dash-box">
+                <h3>Total a Pagar</h3>
+                <div class="value total-expense" id="dash-total-expense">€0,00</div>
+            </div>
+            <div class="dash-box balance-box" id="dash-balance-box">
+                <h3>Saldo Restante</h3>
+                <div class="value" id="dash-balance-value">€0,00</div>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2><span class="icon">👥</span> Resumo por Responsável</h2>
+            <div class="table-container">
+                <table id="breakdown-table">
+                    <thead>
+                        <tr>
+                            <th>Responsável</th>
+                            <th style="text-align: right;">Ganhos</th>
+                            <th style="text-align: right;">Despesas</th>
+                            <th style="text-align: right;">Saldo Final</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        </tbody>
+                </table>
+            </div>
+        </section>
+
+
+
+    <script src="script.js"></script>
+</body>
+</html>
