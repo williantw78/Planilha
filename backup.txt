@@ -1,6 +1,137 @@
 {
-    "users": [],
-    "months": [],
-    "expenses": [],
-    "incomes": []
+    "users": [
+        "Willian",
+        "Duda"
+    ],
+    "months": [
+        "2026-07"
+    ],
+    "expenses": [
+        {
+            "id": 1,
+            "name": "Aluguel",
+            "type": "recorrente",
+            "user": "Willian",
+            "values": {}
+        },
+        {
+            "id": 2,
+            "name": "Millennium",
+            "type": "recorrente",
+            "user": "Duda",
+            "values": {}
+        },
+        {
+            "id": 4,
+            "name": "Água",
+            "type": "unico",
+            "user": "Willian",
+            "values": {}
+        },
+        {
+            "id": 5,
+            "name": "Luz",
+            "type": "unico",
+            "user": "Duda",
+            "values": {}
+        },
+        {
+            "id": 6,
+            "name": "Gas",
+            "type": "unico",
+            "user": "Duda",
+            "values": {}
+        },
+        {
+            "id": 7,
+            "name": "Wizink Duda",
+            "type": "unico",
+            "user": "Duda",
+            "values": {}
+        },
+        {
+            "id": 8,
+            "name": "Wizink Will",
+            "type": "unico",
+            "user": "Willian",
+            "values": {}
+        },
+        {
+            "id": 9,
+            "name": "Novobanco Will",
+            "type": "recorrente",
+            "user": "Willian",
+            "values": {}
+        },
+        {
+            "id": 10,
+            "name": "Millennium (Cartão)",
+            "type": "recorrente",
+            "user": "Duda",
+            "values": {}
+        },
+        {
+            "id": 11,
+            "name": "Manutenção Will",
+            "type": "recorrente",
+            "user": "Willian",
+            "values": {}
+        },
+        {
+            "id": 12,
+            "name": "Manutenção Duda",
+            "type": "recorrente",
+            "user": "Duda",
+            "values": {}
+        },
+        {
+            "id": 13,
+            "name": "Internet",
+            "type": "recorrente",
+            "user": "Willian",
+            "values": {}
+        },
+        {
+            "id": 14,
+            "name": "Segurança social",
+            "type": "recorrente",
+            "user": "Duda",
+            "values": {}
+        },
+        {
+            "id": 15,
+            "name": "Contas BR",
+            "type": "unico",
+            "user": "Willian",
+            "values": {}
+        },
+        {
+            "id": 16,
+            "name": "Academia",
+            "type": "recorrente",
+            "user": "Willian",
+            "values": {}
+        },
+        {
+            "id": 17,
+            "name": "Klarna",
+            "type": "unico",
+            "user": "Willian",
+            "values": {}
+        }
+    ],
+    "incomes": [
+        {
+            "id": 1,
+            "name": "Salário",
+            "user": "Willian",
+            "values": {}
+        },
+        {
+            "id": 2,
+            "name": "Salário",
+            "user": "Duda",
+            "values": {}
+        }
+    ]
 }
