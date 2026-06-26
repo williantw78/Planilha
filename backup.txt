@@ -145,6 +145,46 @@
                 "2026-09": 33
             },
             "paidStatuses": {}
+        },
+        {
+            "id": 13,
+            "name": "Contas Brasil",
+            "type": "unico",
+            "user": "Willian",
+            "values": {},
+            "paidStatuses": {}
+        },
+        {
+            "id": 14,
+            "name": "Klarna",
+            "type": "unico",
+            "user": "Willian",
+            "values": {},
+            "paidStatuses": {}
+        },
+        {
+            "id": 15,
+            "name": "Seguros",
+            "type": "unico",
+            "user": "Willian",
+            "values": {},
+            "paidStatuses": {}
+        },
+        {
+            "id": 16,
+            "name": "Outros",
+            "type": "unico",
+            "user": "Willian",
+            "values": {},
+            "paidStatuses": {}
+        },
+        {
+            "id": 17,
+            "name": "Outros",
+            "type": "unico",
+            "user": "Duda",
+            "values": {},
+            "paidStatuses": {}
         }
     ],
     "incomes": [
